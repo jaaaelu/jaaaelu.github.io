@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="jaaaelu eslint yarn">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="jaaaelu">
+    
+
+    <!-- Title -->
+    
+    <title>测试测试 | Jaaaelu - Girlthub</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+    <!-- Content -->
+    <section class="article-container">
+<!-- Back Home -->
+<a class="nav-back" href="/">
+    <i class="fa fa-puzzle-piece"></i>
+</a>
+
+<!-- Page Header -->
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>测试测试</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Main Content -->
+            <div class="post-content col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <p>#为什么右边的字出不来呢</p>
+<!-- ## 初识Eslint
+
+记得当时引入ESLint的程序员用了一个Tab缩进，
+另一个用ESLint的程序员带着他的不满说：
+为什么要用一个Tab，我一直都是用两个Tab的啊。
+最后，他俩把关于缩进的设置给关了...
+
+
+等他们走后，我换回了自己熟悉的Tab缩进...
+
+
+
+## Eslint简介
+
+关于[ESLint](http://eslint.org/)，官网上是这么描述的
+
+ESLint is a tool for identifying and reporting on patterns found in ECMAScript/JavaScript code, with the goal of making code more consistent and avoiding bugs. 
+
+体验下来，对于我的应用场景来说，它的主要用处有三个：
+
+一、规范代码
+
+简而言之，就是代码洁癖者对缩进之类的强迫症
+
+二、减少低级错误率
+
+检查拼写错误，如console写成consloe等等
+
+三、精简代码
+
+识别不必要的变量，比如定义了一个变量最后没有使用，那么它就会提醒你把这个变量删掉
+
+
+
+## Eslint安装
+
+全局安装
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ npm install -g eslint</div></pre></td></tr></table></figure>
+<p>IDE插件：<br>我使用的是VS Code，下载ESLint插件，可在IDE内使用ESLint</p>
+<p>在项目根目录下新建一个名为.eslintrc的文件<br>js、json格式都可以，相同命名条件下，js优先使用<br>所以我选择新建.eslintrc.js</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">$ module.exports = &#123;</div><div class="line">    // 默认的规则文件，能报出常见的核心规则错误，plugin为react所需规则插件</div><div class="line">    <span class="string">"extends"</span>: [<span class="string">"eslint:recommended"</span>, <span class="string">"plugin:react/recommended"</span>],</div><div class="line"></div><div class="line">    // 解析器：默认为esprima，我改成了babel解析，可以解析ES6/7</div><div class="line">    <span class="string">"parser"</span>: <span class="string">"babel-eslint"</span>,</div><div class="line"></div><div class="line">    // 规则说明 0-不验证 1-warning 2-error</div><div class="line">    <span class="string">"rules"</span>: &#123;</div><div class="line">        <span class="string">"no-unused-vars"</span>: 1, //声明了变量却没有适用</div><div class="line">        <span class="string">"indent"</span>: [1, 4], //强制使用一致的缩进</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    // 设置解析器选项</div><div class="line">    <span class="string">"parserOptions"</span>: &#123;</div><div class="line">        // 指定你想要使用的 ECMAScript 版本</div><div class="line">        <span class="string">"ecmaVersion"</span>: 2017,</div><div class="line">        // 设置为 <span class="string">"script"</span> (默认) 或 <span class="string">"module"</span>（如果你的代码是 ECMAScript 模块)。</div><div class="line">        <span class="string">"sourceType"</span>: <span class="string">"module"</span>,</div><div class="line">        // 这是个对象，表示你想使用的额外的语言特性:</div><div class="line">        <span class="string">"ecmaFeatures"</span>: &#123;</div><div class="line">            // 启用 JSX</div><div class="line">            <span class="string">"jsx"</span>: <span class="literal">true</span></div><div class="line">        &#125;</div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    // 脚本在执行期间访问的额外的全局变量</div><div class="line">    <span class="string">"globals"</span>: &#123;</div><div class="line">        <span class="string">"document"</span>: <span class="literal">true</span>,</div><div class="line">        <span class="string">"navigator"</span>: <span class="literal">true</span>,</div><div class="line">        <span class="string">"window"</span>: <span class="literal">true</span></div><div class="line">    &#125;,</div><div class="line"></div><div class="line">    // ESLint 支持使用第三方插件。在使用插件之前，你必须使用 npm 安装它。</div><div class="line">    <span class="string">"plugins"</span>: [</div><div class="line">        <span class="string">"react"</span>,</div><div class="line">        <span class="string">"jsx-a11y"</span>,</div><div class="line">        <span class="string">"import"</span></div><div class="line">    ]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>以上选项均可配置。<br>其中rule配置为所有规则的自己配置。<br>一般只有一个参数，较少出现两个参数的情况。<br>如indent（也就是引起文初两个程序员争议的地方），<br>数组第一个参数为提示的级别，也就是0、1、2。<br>第二个参数就是你规定的缩进Tab，4代表两个Tab，2代表一个Tab。<br>设置更多的个人rule详见<a href="http://eslint.org/">ESLint</a></p>
+<h2 id="关闭ESlint"><a href="#关闭ESlint" class="headerlink" title="关闭ESlint"></a>关闭ESlint</h2><p>在项目开发过程中，可能需要打印console。<br>如果每次都报waring或者error，确实让人觉得不必要。<br>一般都选择在项目提测上线的时候，进行一次ESlint。<br>所以在开发阶段关闭ESlint也是一种选择。</p>
+<p>在某个页面禁用ESlint只需添加如下代码：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">/* eslint-disable */</div></pre></td></tr></table></figure></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://eslint.org/">ESLint</a><br><a href="http://eslint.cn/">ESLint中文</a></p>
+<p>The End</p>
+<p> –&gt;</p>
+-->
+ 
+                <!-- Meta -->
+                <div class="post-meta">
+                    <hr>
+                    <br>
+                    <div class="post-tags">
+                        
+                    </div>
+                    <div class="post-date">
+                        2017 年 04 月 10 日
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- Disqus Comments -->
+
+
+            </div>
+        </div>
+    </div>
+</article>
+</section>
+
+    <!-- Scripts -->
+    <!-- jQuery -->
+<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+	console.log('Hexo-theme-hollow designed by zchen9 🙋 © 2015-' + (new Date()).getFullYear());
+</script>
+
+    <!-- Google Analytics -->
+    
+
+</body>
+
+</html>
