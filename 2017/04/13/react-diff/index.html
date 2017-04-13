@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="jaaaelu eslint yarn">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="jaaaelu">
+    
+
+    <!-- Title -->
+    
+    <title>【翻译向】React-Diff算法 | Jaaaelu - Girlthub</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+    <!-- Content -->
+    <section class="article-container">
+<!-- Back Home -->
+<a class="nav-back" href="/">
+    <i class="fa fa-puzzle-piece"></i>
+</a>
+
+<!-- Page Header -->
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>【翻译向】React-Diff算法</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Main Content -->
+            <div class="post-content col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <p>当年操起键盘就开始写jQuery的我，<br>花了很长时间学习React，<br>学会之后，抱怨它的繁琐，<br>于是，花了很久，<br>才明白框架存在的意义。</p>
+<a id="more"></a>
+<hr>
+<h2 id="你以为的React"><a href="#你以为的React" class="headerlink" title="你以为的React"></a>你以为的React</h2><p>在我接触React的初期，有一位Vue工程师。<br>他来到我司写起了React，一边写一边骂。<br>“ sb React！！！！”<br>我好奇的问：“ 哪里sb了？”<br>“ 每个map都要加个key，不加key就报警，每个key还得一样，你说傻不傻逼。 ”</p>
+<p>……<br>过了很久，我看到React的Diff算法。<br>才知道，原来每个key的由来都是有原因的。<br>它的存在，不只是为了报警…..</p>
+<h2 id="React-Diff算法笔记"><a href="#React-Diff算法笔记" class="headerlink" title="React-Diff算法笔记"></a>React-Diff算法笔记</h2><p>html渲染无非两种情况：<br>1、标签里放不样的标签<br>2、标签里放相同的标签<br>我们来一一分析，React是如何解析和渲染虚拟Dom的。</p>
+<p>在最开始的时候，render函数为react元素创建了一棵树，当state和props更新时，render将会返回一棵不同的树，它需要做的是如何最高效的match到UI界面去替换树。<br>换句话说，做最少的替换而不是把树拔走再种一棵树。</p>
+<p>React提供两种算法：<br>1、两种不同类型的元素将产生两棵不同的树<br>2、可以通过每个元素下不同的key值来提示React哪个子元素是不变的</p>
+<p>当处理两棵树时，react会首先比较两个根节点的元素。根节点元素的不同引起了算法的不同处理。</p>
+<h3 id="根节点元素类型不同"><a href="#根节点元素类型不同" class="headerlink" title="根节点元素类型不同"></a>根节点元素类型不同</h3><p>当根节点元素不同时，react会拆下一棵树重建，比如&lt; a &gt;变成&lt; img &gt;，就会导致重建。</p>
+<p>当拆下一棵树的时候，老的DOM节点被销毁，同时调用componentWillUnmount()。</p>
+<p>当重建一棵新树的时候，新的DOM节点会被插入新树中，同时先调用componentWillMount(),然后调用componentDidMount()。（关于react组件周期我会再详细写一篇）任何与老树有联系的state将会全部丢失。</p>
+<p>任何在根节点下的组件也会像根节点一样，销毁DOM的同时丢失它的state。</p>
+<p>举个例子：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&lt;div&gt;</div><div class="line">  &lt;Counter /&gt;</div><div class="line">&lt;/div&gt;</div><div class="line"></div><div class="line">&lt;span&gt;</div><div class="line">  &lt;Counter /&gt;</div><div class="line">&lt;/span&gt;</div></pre></td></tr></table></figure>
+<p>根节点发生变化，从div变成span，那么将会销毁老的Counter组件，重新渲染新的Counter组件。</p>
+<h3 id="根节点元素类型相同"><a href="#根节点元素类型相同" class="headerlink" title="根节点元素类型相同"></a>根节点元素类型相同</h3><p>当元素类型相同时，React将会比较两个元素的属性。保留相同属性，只更新改变的属性。</p>
+<p>比如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;div className=<span class="string">"before"</span> title=<span class="string">"stuff"</span> /&gt;</div><div class="line"></div><div class="line">&lt;div className=<span class="string">"after"</span> title=<span class="string">"stuff"</span> /&gt;</div></pre></td></tr></table></figure>
+<p>通过比较他们的属性，react知道只有className发生了改变。<br>当更新style属性时，也只会更新那些更改了的style属性。如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;div style=&#123;&#123;<span class="string">'&#123;&#123;'</span>&#125;&#125;color: <span class="string">'red'</span>, fontWeight: <span class="string">'bold'</span>&#125;&#125; /&gt;</div><div class="line"></div><div class="line">&lt;div style=&#123;&#123;<span class="string">'&#123;&#123;'</span>&#125;&#125;color: <span class="string">'green'</span>, fontWeight: <span class="string">'bold'</span>&#125;&#125; /&gt;</div></pre></td></tr></table></figure>
+<p>当在两个元素中间转变时，react会只更新color，而不会重新渲染fontWeight。</p>
+<p>在处理了DOM节点后，随后对它的子类进行递归处理。</p>
+<h3 id="组件元素类型相同"><a href="#组件元素类型相同" class="headerlink" title="组件元素类型相同"></a>组件元素类型相同</h3><p>当组件类型相同时更新，情况和上述相同，state是被保留的（不会丢失）。React更新组件下的属性去匹配新的元素。并且调用componentWillReceiveProps()和componentWillUpdate()。</p>
+<p>然后，调用render()，diff算法将递归先前的比较结果和新的结果。</p>
+<h3 id="递归子元素"><a href="#递归子元素" class="headerlink" title="递归子元素"></a>递归子元素</h3><p>当递归DOM节点的子元素时，React只是在重复子元素的列表的同时在发现新的变化的地方产生新的变化。（非常拗口，其实我的翻译水平差！）</p>
+<p>来，用代码说话：</p>
+<p>当在底部增加一个新的元素时，</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;ul&gt;</div><div class="line">  &lt;li&gt;first&lt;/li&gt;</div><div class="line">  &lt;li&gt;second&lt;/li&gt;</div><div class="line">&lt;/ul&gt;</div><div class="line"></div><div class="line">&lt;ul&gt;</div><div class="line">  &lt;li&gt;first&lt;/li&gt;</div><div class="line">  &lt;li&gt;second&lt;/li&gt;</div><div class="line">  &lt;li&gt;third&lt;/li&gt;</div><div class="line">&lt;/ul&gt;</div></pre></td></tr></table></figure>
+<p>React将会match两棵&lt; li &gt; first &lt; /li &gt;树，然后再插入&lt; li &gt; third &lt; /li &gt;。</p>
+<p>如果你选择在头部加入一个元素，那么，效果会差很多。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;ul&gt;</div><div class="line">  &lt;li&gt;Duke&lt;/li&gt;</div><div class="line">  &lt;li&gt;Villanova&lt;/li&gt;</div><div class="line">&lt;/ul&gt;</div><div class="line"></div><div class="line">&lt;ul&gt;</div><div class="line">  &lt;li&gt;Connecticut&lt;/li&gt;</div><div class="line">  &lt;li&gt;Duke&lt;/li&gt;</div><div class="line">  &lt;li&gt;Villanova&lt;/li&gt;</div><div class="line">&lt;/ul&gt;</div></pre></td></tr></table></figure>
+<p>React将会转换所有的元素，而不会去意识到 &lt; li &gt; Duke &lt; /li &gt;和&lt; li &gt; Villanova &lt; /li &gt;是可以保留的。</p>
+<p>这个算法确实有点坑爹啊。。。所以React提供key来解决这一问题。</p>
+<h3 id="Key！"><a href="#Key！" class="headerlink" title="Key！"></a>Key！</h3><p>没错，这个就是在文首提到的我的同事骂React的原因——key！</p>
+<p>现在，我们来为React扳回一城。</p>
+<p>当遍历渲染子元素时，给每个子元素添加一个独一无二的key。React使用key去match原始的树，给上面的例子加一个key：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;ul&gt;</div><div class="line">  &lt;li key=<span class="string">"2015"</span>&gt;Duke&lt;/li&gt;</div><div class="line">  &lt;li key=<span class="string">"2016"</span>&gt;Villanova&lt;/li&gt;</div><div class="line">&lt;/ul&gt;</div><div class="line"></div><div class="line">&lt;ul&gt;</div><div class="line">  &lt;li key=<span class="string">"2014"</span>&gt;Connecticut&lt;/li&gt;</div><div class="line">  &lt;li key=<span class="string">"2015"</span>&gt;Duke&lt;/li&gt;</div><div class="line">  &lt;li key=<span class="string">"2016"</span>&gt;Villanova&lt;/li&gt;</div><div class="line">&lt;/ul&gt;</div></pre></td></tr></table></figure>
+<p>现在React知道key为2014的元素是新插入的元素，而key为2015和2016的元素只是被移动了而已。</p>
+<p>其实给元素增加一个独一无二的key并不难，你只需服务端带来的数据作为key即可，比如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;li key=&#123;item.id&#125;&gt;&#123;item.name&#125;&lt;/li&gt;</div></pre></td></tr></table></figure>
+<p>我们还可以通过增加一个新的ID属性或者设置hash字符串来产生一个Key，<br>key的独一无二仅仅只是对于它的兄弟元素，而不是全局。</p>
+<p>在工程中最常用的一个方法，是通过数组的索引值来创造key。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>理解React算法能重要的提升性能。React可以重新渲染当整个APP发生事件，最后的结果将会相同。我们理解算法，可以使结果相同时渲染性能做到更快。</p>
+<p>当子树从兄弟元素中被移除，但是你无法告诉它哪里被移除了。所以算法会渲染一整棵树。</p>
+<p>因为React依赖于key或其他属性的启发，所以当算法没有搜寻到相同属性是否有改变，它的性能会大大受损。</p>
+<p>1、算法不会去尝试match不同类型组件的子树。如果你想转换两个非常相似的组件元素，你可能想要去把他们转换成两个相同类型的元素。实际上，React不会去发现它（因为他们是两个不同的类型）。</p>
+<p>2、key应该是稳定的、可预测的、独一无二的。不稳定的key（像Math.random()产生出的）将造成很多组件和DOM节点不必要的重建，它们带来的结果就会使性能降低，丢失子组件的state等等。</p>
+<h2 id="原文出处"><a href="#原文出处" class="headerlink" title="原文出处"></a>原文出处</h2><p><a href="https://github.com/facebook/react/blob/master/docs/docs/reconciliation.md" target="_blank" rel="external">React-diff</a></p>
+
+ 
+                <!-- Meta -->
+                <div class="post-meta">
+                    <hr>
+                    <br>
+                    <div class="post-tags">
+                        
+                            
+
+<a href="/tags/理解算法，让世界更美好/">#理解算法，让世界更美好</a>
+
+
+                        
+                    </div>
+                    <div class="post-date">
+                        2017 年 04 月 13 日
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- Disqus Comments -->
+
+
+            </div>
+        </div>
+    </div>
+</article>
+</section>
+
+    <!-- Scripts -->
+    <!-- jQuery -->
+<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+	console.log('Hexo-theme-hollow designed by zchen9 🙋 © 2015-' + (new Date()).getFullYear());
+</script>
+
+    <!-- Google Analytics -->
+    
+
+</body>
+
+</html>

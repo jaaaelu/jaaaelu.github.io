@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="jaaaelu eslint yarn">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="jaaaelu">
+    
+
+    <!-- Title -->
+    
+    <title>Yarn：渣网速下逼出来的改革 | Jaaaelu - Girlthub</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+    <!-- Content -->
+    <section class="article-container">
+<!-- Back Home -->
+<a class="nav-back" href="/">
+    <i class="fa fa-puzzle-piece"></i>
+</a>
+
+<!-- Page Header -->
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>Yarn：渣网速下逼出来的改革</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Main Content -->
+            <div class="post-content col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <p>如果不是因为公司网速慢，<br>我想我不会遇见你。<br>从此cnpm是路人。<br>Yarn太特么的好用啦！</p>
+<a id="more"></a>
+<hr>
+<h2 id="初识Yarn"><a href="#初识Yarn" class="headerlink" title="初识Yarn"></a>初识Yarn</h2><p>作为一个需要node环境的人来说，<br>npm太慢，有前辈推荐我使用淘宝出的cnpm来构建文件。<br>用着倒是比npm的要快上不少。<br>可是，有段时间办公网络环境慢的堪比拖拉机。<br>一边，测试催着改bug。<br>一边，改好了bug想提交服务器，结果渣网速cnpm总是挂。<br>忍无可忍的工程师，决定使用Yarn来取代npm/cnpm。</p>
+<h2 id="关于Yarn"><a href="#关于Yarn" class="headerlink" title="关于Yarn"></a>关于Yarn</h2><p>关于Yarn，facebook给出的使用理由是如下，我翻译了一下：</p>
+<p>1、离线模式（Offline Mode）：如果你之前安装过某个包，那么你可以在没有互联网连接的情况下，对这个包进行重新安装。</p>
+<p>翻译：速度快</p>
+<p>2、确定性（Deterministic）：不管安装顺序如何，相同的依赖在每台机器上会以完全相同的方式进行安装。</p>
+<p>翻译：减少BUG</p>
+<p>3、网络性能：Yarn会对请求进行高效地排队，避免出现请求瀑布（waterfall），便于将网络的使用效率达到最大化。</p>
+<p>翻译：性能好</p>
+<p>4、扁平模式（Flat Mode）：将不匹配的依赖版本都会解析为同一个版本，避免重复创建。</p>
+<p>翻译：避免重复构建</p>
+<p>5、网络弹性（Network Resilience）：单个请求的失败不会导致整个安装的失败，请求会基于故障进行重试。</p>
+<p>翻译：2+4</p>
+<h2 id="安装与使用"><a href="#安装与使用" class="headerlink" title="安装与使用"></a>安装与使用</h2><p>我使用的是macOS系统，根据<a href="https://yarnpkg.com/en/docs/install" target="_blank" rel="external">Yarn</a>官方建议，我选择使用的是先安装<a href="https://brew.sh/index_zh-cn.html" target="_blank" rel="external">Homebrew</a>的方法。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">/usr/bin/ruby <span class="_">-e</span> <span class="string">"<span class="variable">$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)</span>"</span></div><div class="line">brew update</div><div class="line">brew install yarn</div></pre></td></tr></table></figure>
+<p>我必须说，用这种方法安装Yarn等待的时间非常长，我安装到想暴走！<br>所以如果等待不了的建议使用官网其他方法。</p>
+<p>安装完成后，可以使用下面的命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yarn installl</div></pre></td></tr></table></figure>
+<p>此时会生成一个很重要的Yarn.lock文件，它是与npm根本区别的地方，也是大多数人转投Yarn的最大原因：</p>
+<p>当我们修改了一小部分的代码的时候，我们不希望大部分的没有被改动的代码重新被构建。<br>npm：重新构建项目下的所有文件，不管它有无改动。<br>Yarn：缓存未改动的依赖文件，而只构建改动的代码文件。避免了重复的构建。</p>
+<p>以往的npm中可能会有些依赖缺失版本号，导致不同用户不同手机下下载的依赖版本不一致，这就是npm可能会出现莫名bug的缘由。</p>
+<p>Yarn.lock里记录了所有依赖模块的版本号。这样，当运行Yarn install时，它会检查所有依赖是否符合它所记录的版本号。保证依赖一致。</p>
+<p>The End</p>
+
+ 
+                <!-- Meta -->
+                <div class="post-meta">
+                    <hr>
+                    <br>
+                    <div class="post-tags">
+                        
+                            
+
+<a href="/tags/认识Yarn，很高兴/">#认识Yarn，很高兴</a>
+
+
+                        
+                    </div>
+                    <div class="post-date">
+                        2017 年 04 月 12 日
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- Disqus Comments -->
+
+
+            </div>
+        </div>
+    </div>
+</article>
+</section>
+
+    <!-- Scripts -->
+    <!-- jQuery -->
+<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+	console.log('Hexo-theme-hollow designed by zchen9 🙋 © 2015-' + (new Date()).getFullYear());
+</script>
+
+    <!-- Google Analytics -->
+    
+
+</body>
+
+</html>
