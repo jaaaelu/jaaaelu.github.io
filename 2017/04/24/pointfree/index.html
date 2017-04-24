@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="jaaaelu eslint yarn">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="jaaaelu">
+    
+
+    <!-- Title -->
+    
+    <title>Ramda与PointFree：6的飞起的函数式编程搭档 | Jaaaelu - Girlthub</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+    <!-- Content -->
+    <section class="article-container">
+<!-- Back Home -->
+<a class="nav-back" href="/">
+    <i class="fa fa-puzzle-piece"></i>
+</a>
+
+<!-- Page Header -->
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>Ramda与PointFree：6的飞起的函数式编程搭档</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Main Content -->
+            <div class="post-content col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <p>曾经认为函数式编程是个程序员装逼的东西，<br>在看了一篇博客后，醍醐灌顶。</p>
+<p>由此可以得出结论：</p>
+<p>1、函数式编程好用好用真好用。<br>2、博客写得好，真特喵的重要。</p>
+<a id="more"></a>
+<hr>
+<p>##初识函数式编程</p>
+<p>在很早很早以前。<br>我的师傅曾经抛给我一个链接：<br>“你去看看<a href="https://llh911001.gitbooks.io/mostly-adequate-guide-chinese/content/" target="_blank" rel="external">函数式编程</a>…”<br>我边看边心里暗搓搓的想：<br>“写这么麻烦干嘛…”<br>遂搁浅之。</p>
+<p>无聊闲逛到阮一峰的博客，<br>发现他对其做了解读。<br>看了一下，迫不及待的在项目中做了一点尝试。</p>
+<p>啊，真是美好。</p>
+<h2 id="Ramda类库"><a href="#Ramda类库" class="headerlink" title="Ramda类库"></a>Ramda类库</h2><p>Ramda是个类库，大体和underscore.js以及backbone.js一样。<br>内置很多运算的函数。肥肠好用！</p>
+<p>关于它比另外两者的好处，阮老师做了详细的<a href="http://www.ruanyifeng.com/blog/2017/03/ramda.html" target="_blank" rel="external">解答</a></p>
+<p>全局安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install ramda</div></pre></td></tr></table></figure>
+<p>在文件内引用</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">import R from ramda</div></pre></td></tr></table></figure>
+<p>同时记得在webpack里配置ramda，否则就像我一样，只能在自己的机子上跑，其他的小伙伴跑不了。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">devDependencies:&#123;</div><div class="line">...</div><div class="line"><span class="string">"ramda"</span>: <span class="string">"0.17.x"</span>,</div><div class="line">...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="使用Pointfree函数式编程"><a href="#使用Pointfree函数式编程" class="headerlink" title="使用Pointfree函数式编程"></a>使用Pointfree函数式编程</h2><p>项目里需要做到对手机号码加密</p>
+<p>###使用以往的编程方法</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">function</span> handle(tel)&#123;</div><div class="line">    <span class="built_in">let</span> a =  tel.split(<span class="string">''</span>) // 1,5,7,5,7,1,7,9,8,0,9</div><div class="line">    a.splice(3, 5, <span class="string">'******'</span>) // 1,5,7,<span class="string">'*****'</span>,8,0,9</div><div class="line">    a.join(<span class="string">''</span>) // 1,5,7,<span class="string">'*****'</span>,8,0,9</div><div class="line">&#125;</div><div class="line">handle(<span class="string">'15757179809'</span>)</div></pre></td></tr></table></figure>
+<p>在写这段代码的时候，我第一次写成了这样。<br>我发现第二步和第三步的返回结果相同。<br>我仔细查了一下join函数和splice函数有没有写错。<br>没有任何问题。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">function</span> handle(tel)&#123;</div><div class="line">    <span class="built_in">let</span> a =  tel.split(<span class="string">''</span>) // 1,5,7,5,7,1,7,9,8,0,9</div><div class="line">    a.splice(3, 5, <span class="string">'******'</span>) // 1,5,7,<span class="string">'*****'</span>,8,0,9</div><div class="line">    <span class="built_in">let</span> b = a.join(<span class="string">''</span>) // <span class="string">'157*****809'</span></div><div class="line">&#125;</div><div class="line">handle(<span class="string">'15757179809'</span>)</div></pre></td></tr></table></figure>
+<p>后来通过测试，能发现，一定要定义一个变量去获得函数结果，否则，下一个函数则不生效。</p>
+<p>###使用函数式编程</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">let</span> handleTel = R.pipe(</div><div class="line">    R.remove(3, 5), // <span class="string">'1,5,7,8,0,9'</span></div><div class="line">    R.insert(3, <span class="string">'*****'</span>),// <span class="string">'1,5,7,*,*,*,*,*,8,0,9'</span></div><div class="line">    R.join(<span class="string">''</span>) // <span class="string">'157*****809'</span></div><div class="line">);</div><div class="line"></div><div class="line">handleTel(<span class="string">'15757179809'</span>) // <span class="string">'157*****809'</span></div></pre></td></tr></table></figure>
+<p>pipe函数将三个不同的函数按从左到右的顺序执行。<br>可以看到handleTel函数不带有任何形参，完全由函数组成。<br>这就避免了关于参数上可能出现的风险错误。<br>同时，不需要定义多个变量来导出结果。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://ramdajs.com/docs/#" target="_blank" rel="external">Ramda.js</a><br><a href="http://www.ruanyifeng.com/blog/2017/03/pointfree.html#comment-374657" target="_blank" rel="external">PointFree</a></p>
+<p>The End</p>
+
+ 
+                <!-- Meta -->
+                <div class="post-meta">
+                    <hr>
+                    <br>
+                    <div class="post-tags">
+                        
+                            
+
+<a href="/tags/没事常看看阮一峰的博客/">#没事常看看阮一峰的博客</a>
+
+
+                        
+                    </div>
+                    <div class="post-date">
+                        2017 年 04 月 24 日
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- Disqus Comments -->
+
+
+            </div>
+        </div>
+    </div>
+</article>
+</section>
+
+    <!-- Scripts -->
+    <!-- jQuery -->
+<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+	console.log('Hexo-theme-hollow designed by zchen9 🙋 © 2015-' + (new Date()).getFullYear());
+</script>
+
+    <!-- Google Analytics -->
+    
+
+</body>
+
+</html>
