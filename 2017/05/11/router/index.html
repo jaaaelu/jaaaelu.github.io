@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="jaaaelu eslint yarn">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="jaaaelu">
+    
+
+    <!-- Title -->
+    
+    <title>React-Router：浅试一把SPA的牛刀 | Jaaaelu - Girlthub</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+    <!-- Content -->
+    <section class="article-container">
+<!-- Back Home -->
+<a class="nav-back" href="/">
+    <i class="fa fa-puzzle-piece"></i>
+</a>
+
+<!-- Page Header -->
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>React-Router：浅试一把SPA的牛刀</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Main Content -->
+            <div class="post-content col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <a id="more"></a>
+<p>曾经看过jQuery写SPA，<br>写的人很痛苦，看的人也很痛苦。</p>
+<h2 id="还好，现在我们有了React-Router。"><a href="#还好，现在我们有了React-Router。" class="headerlink" title="还好，现在我们有了React-Router。"></a>还好，现在我们有了React-Router。</h2><h2 id="日常段子"><a href="#日常段子" class="headerlink" title="日常段子"></a>日常段子</h2><p>某日在微博上看到一个博主说：<br>现在SPA都开始XX了啊…<br>我天灵盖闪过的第一个念头竟然是：<br>S（ingle）P（age）A（pplication）都XX了？？？<br>点进评论一看才知道，是SPA（斯巴）……</p>
+<h2 id="关于Router"><a href="#关于Router" class="headerlink" title="关于Router"></a>关于Router</h2><p>关于如何安装之类的就不再解释，详情请看ESlint，以及Ramda等类库的同理安装，无非是本地安装，pageage.json的配置云云。</p>
+<p>在项目中，做简单的基础API的测试。在此做下记录。</p>
+<p>引入react</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">import &#123;HashRouter as Router, Route, Redirect, <span class="built_in">hash</span>History&#125; from <span class="string">'react-router-dom'</span></div><div class="line"></div><div class="line">&lt;Router&gt;</div><div class="line">	&lt;Route path=<span class="string">"/one"</span> components=&#123;one&#125; /&gt;</div><div class="line">	&lt;Route path=<span class="string">"/two"</span> components=&#123;two&#125; /&gt;</div><div class="line">&lt;/Router&gt;</div></pre></td></tr></table></figure>
+<p>path决定url后跳转的页面。<br>ex：访问localhost:8990/one时加载one组件</p>
+<h2 id="path里放入参数"><a href="#path里放入参数" class="headerlink" title="path里放入参数"></a>path里放入参数</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;Router&gt;</div><div class="line">	&lt;Route path=<span class="string">"/one:id"</span> components=&#123;one&#125; /&gt;</div><div class="line">&lt;/Router&gt;</div></pre></td></tr></table></figure>
+<p>在one组件里，this.props.match.params.id即可得到</p>
+<p>如localhost:8990/index.html/one/a2f5764c29994812addacd7df3f46fef</p>
+<p>one里得到的<br>this.props.match.params.id = a2f5764c29994812addacd7df3f46fef</p>
+<p>（我查看了所有网页上的教材，都说要this.props.params.id，无需加match，但是当我那么做时，发现，props没有直接的params字段，而是隐藏在match字段下）</p>
+<p>:id匹配URL的一个部分，直到遇到下一个/、?、#为止。这个路径参数可以通过this.props.params.id取出。</p>
+<h2 id="指定当进入index-html时显示home组件（无path参数）"><a href="#指定当进入index-html时显示home组件（无path参数）" class="headerlink" title="指定当进入index.html时显示home组件（无path参数）"></a>指定当进入index.html时显示home组件（无path参数）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;IndexRoute component=&#123;Home&#125; /&gt;</div></pre></td></tr></table></figure>
+<p>但是我个人更喜欢</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;Route path=<span class="string">"/"</span> component=&#123;Home&#125; /&gt;</div></pre></td></tr></table></figure>
+<p>大概是因为，都用Route看着比较整齐。。。。逼死个强迫症</p>
+<h2 id="自动跳转（呼叫转移）"><a href="#自动跳转（呼叫转移）" class="headerlink" title="自动跳转（呼叫转移）"></a>自动跳转（呼叫转移）</h2><p>to必须是绝对路径。一般这个API多用于符合某一条件时的自动跳转，我在项目中实践了一下。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"> &lt;Router <span class="built_in">history</span>=&#123;<span class="built_in">hash</span>History&#125;&gt;</div><div class="line">    &lt;Route path=<span class="string">"/"</span>&gt;</div><div class="line">    &#123;info.status === 0 &amp;&amp;</div><div class="line">        &lt;Redirect from=&#123;<span class="string">"workStatus/"</span> + info.id&#125; to=&#123;<span class="string">"/cardList/"</span> + info.id + <span class="string">'/toast'</span>&#125; /&gt;</div><div class="line">    &#125;</div><div class="line">    &lt;/Route&gt;</div><div class="line">&lt;/Router&gt;</div></pre></td></tr></table></figure>
+<h2 id="点击跳转"><a href="#点击跳转" class="headerlink" title="点击跳转"></a>点击跳转</h2><p>没啥说的，就是个a标签包起来了而已，记得reset一下a标签的样式，我就加了个link，结果，样式都变了=。=</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;li&gt;&lt;Link to=<span class="string">"/about"</span>&gt;About&lt;/Link&gt;&lt;/li&gt;</div></pre></td></tr></table></figure>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://www.ruanyifeng.com/blog/2016/05/react_router.html" target="_blank" rel="external">阮一峰</a><br><a href="https://react-guide.github.io/react-router-cn/docs/API.html" target="_blank" rel="external">GitBook</a></p>
+<p>The End</p>
+
+ 
+                <!-- Meta -->
+                <div class="post-meta">
+                    <hr>
+                    <br>
+                    <div class="post-tags">
+                        
+                            
+
+<a href="/tags/下次要搭配redux/">#下次要搭配redux</a>
+
+
+                        
+                    </div>
+                    <div class="post-date">
+                        2017 年 05 月 11 日
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- Disqus Comments -->
+
+
+            </div>
+        </div>
+    </div>
+</article>
+</section>
+
+    <!-- Scripts -->
+    <!-- jQuery -->
+<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+	console.log('Hexo-theme-hollow designed by zchen9 🙋 © 2015-' + (new Date()).getFullYear());
+</script>
+
+    <!-- Google Analytics -->
+    
+
+</body>
+
+</html>
