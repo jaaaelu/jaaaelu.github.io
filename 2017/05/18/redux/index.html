@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="jaaaelu eslint yarn">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="jaaaelu">
+    
+
+    <!-- Title -->
+    
+    <title>Redux：构建SPA的第二把利器 | Jaaaelu - Girlthub</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+    <!-- Content -->
+    <section class="article-container">
+<!-- Back Home -->
+<a class="nav-back" href="/">
+    <i class="fa fa-puzzle-piece"></i>
+</a>
+
+<!-- Page Header -->
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>Redux：构建SPA的第二把利器</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Main Content -->
+            <div class="post-content col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <p>我记得谁说过：<br>“如果你不知道redux有什么用，那就不要用。”<br>我看了三天，越看越觉得：<br>小项目，state就够了吧。<br>它的威力是和router联用，完成SPA。<br><a id="more"></a></p>
+<hr>
+<h2 id="日常"><a href="#日常" class="headerlink" title="日常"></a>日常</h2><p>action、reducer、dispatch、connect……<br>刚看到的我？？？？一个大写的目瞪口呆<br>这都啥跟啥，为什么有这么多文件…..<br>IDE一直在切换不同的js文件…<br>dispatch是用来通知reducer，这里有个action，该换一下store了，你执行下。<br>reducer收到action，做出对应的反应，来更新store。<br>action里面写了各种事件，来匹配reducer做出反应。<br>妈蛋，这真的不是个绕口令吗？</p>
+<h2 id="入口文件Index-js"><a href="#入口文件Index-js" class="headerlink" title="入口文件Index.js"></a>入口文件Index.js</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">import React from <span class="string">'react'</span></div><div class="line">import &#123; render &#125; from <span class="string">'react-dom'</span></div><div class="line">import &#123; createStore &#125; from <span class="string">'redux'</span></div><div class="line">import &#123; Provider &#125; from <span class="string">'react-redux'</span></div><div class="line">import App from <span class="string">'containers/App'</span></div><div class="line">import todoApp from <span class="string">'containers/reducer'</span></div><div class="line"></div><div class="line">// 创建一棵store树</div><div class="line"><span class="built_in">let</span> store = createStore(todoApp)</div><div class="line"></div><div class="line"><span class="built_in">let</span> rootElement = document.getElementById(<span class="string">'app'</span>)</div><div class="line">render(</div><div class="line"> // 必须使用Provider，用来将redux绑定到react</div><div class="line">  &lt;Provider store=&#123;store&#125;&gt;</div><div class="line">    &lt;App /&gt;</div><div class="line">  &lt;/Provider&gt;,</div><div class="line">  rootElement</div><div class="line">)</div></pre></td></tr></table></figure>
+<p>store的作用是维护state树，根据Action进行事件分发处理state，store树下含有这些属性：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">dispatch:dispatch(action) 将一个action对象发给reducer处理</div><div class="line">getState:getState() 获取state数据</div><div class="line">replaceReducer:replaceReducer(nextReducer)</div><div class="line">subscribe:subscribe(listener) 注册监听函数</div><div class="line">Symbol(Symbol.observable):observable()</div></pre></td></tr></table></figure>
+<h2 id="container文件App-js"><a href="#container文件App-js" class="headerlink" title="container文件App.js"></a>container文件App.js</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">import React, &#123; Component, PropTypes &#125; from <span class="string">'react'</span></div><div class="line">import &#123; connect &#125; from <span class="string">'react-redux'</span></div><div class="line">import &#123; addTodo &#125; from <span class="string">'containers/action'</span></div><div class="line"></div><div class="line">class App extends Component &#123;</div><div class="line"></div><div class="line">    <span class="function"><span class="title">render</span></span>() &#123;</div><div class="line">        const &#123; dispatch, data &#125; = this.props</div><div class="line">        <span class="built_in">return</span> (</div><div class="line">        &lt;div&gt;</div><div class="line">        	// 每当click时使用dispatch调取action，store数据发生变化</div><div class="line">        	&lt;p&gt;&#123;data.text&#125;&lt;/p&gt;</div><div class="line">        	// dispatch通知store发生action改数据</div><div class="line">          &lt;button onClick=&#123;() =&gt; dispatch(addTodo(data.text))&#125;&gt;试试redux&lt;/button&gt;</div><div class="line">        &lt;/div&gt;</div><div class="line">        )</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">function</span> mapStateToProps(state) &#123;</div><div class="line">    <span class="built_in">return</span> &#123;</div><div class="line">        data: state.todos</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">// connect把 React 组件和 Redux 的 store 真正连接起来</div><div class="line"><span class="built_in">export</span> default connect(mapStateToProps)(cssModules(App, styles))</div></pre></td></tr></table></figure>
+<h3 id="关于export有话说："><a href="#关于export有话说：" class="headerlink" title="关于export有话说："></a>关于export有话说：</h3><p>export default表示默认导出一个模块，只能导一个。<br>所以当时的代码是这样的：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">export</span> default connect(mapStateToProps)(App)</div><div class="line"><span class="built_in">export</span> default cssModules(App, styles)</div></pre></td></tr></table></figure>
+<p>不出意外报错了。<br>此时需要理解connect的参数定义。<br>connect([mapStateToProps], [mapDispatchToProps], [mergeProps], [options])(component）<br>component是返回一个连接Redux组件。<br>也就是我们上面导出的class类-App。<br>而cssModules所导出的只是加入过styleName的App类。其实本质的参数形式和connect所需要的app是一样的。<br>所以解决export default只能导出一个的方法是：<br>将connect的返回组件参数的地方嵌套一个cssModule返回的对象</p>
+<h2 id="传递需要操作state的信息のaction-js"><a href="#传递需要操作state的信息のaction-js" class="headerlink" title="传递需要操作state的信息のaction.js"></a>传递需要操作state的信息のaction.js</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">/*</div><div class="line"> * action 类型</div><div class="line"> */</div><div class="line"></div><div class="line"><span class="built_in">export</span> const ADD_TODO = <span class="string">'ADD_TODO'</span>;</div><div class="line"></div><div class="line">// 这个函数的目的只是为了简洁代码</div><div class="line"><span class="keyword">function</span> makeActionCreator(<span class="built_in">type</span>, ...argNames) &#123;</div><div class="line">    <span class="built_in">return</span> <span class="keyword">function</span>(...args) &#123;</div><div class="line">        <span class="built_in">let</span> action = &#123; <span class="built_in">type</span> &#125;</div><div class="line">        argNames.forEach((arg, index) =&gt; &#123;</div><div class="line">        action[argNames[index]] = args[index]</div><div class="line">        &#125;)</div><div class="line">        <span class="built_in">return</span> action</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">// dispatch调用addToDo(text)，也就是action返回给reducer</div><div class="line"><span class="built_in">export</span> const addTodo = makeActionCreator(ADD_TODO, <span class="string">'text'</span>)</div><div class="line">// &#123;text: <span class="string">"11111"</span>,<span class="built_in">type</span>: <span class="string">"ADD_TODO"</span>&#125;</div></pre></td></tr></table></figure>
+<h2 id="根据信息（action）做对应操作（更新state）のReducer-js"><a href="#根据信息（action）做对应操作（更新state）のReducer-js" class="headerlink" title="根据信息（action）做对应操作（更新state）のReducer.js"></a>根据信息（action）做对应操作（更新state）のReducer.js</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">import &#123; combineReducers &#125; from <span class="string">'redux'</span></div><div class="line">import &#123; ADD_TODO, addTodo &#125; from <span class="string">'containers/action'</span></div><div class="line"></div><div class="line"><span class="keyword">function</span> todos(state = [], action) &#123;</div><div class="line">	// reducer收到了之后，做出更新</div><div class="line">    switch (action.type) &#123;</div><div class="line">    <span class="keyword">case</span> ADD_TODO:</div><div class="line">        <span class="built_in">return</span> &#123;</div><div class="line">            text: action.text + 1</div><div class="line">        &#125;</div><div class="line">    default:</div><div class="line">        <span class="built_in">return</span> state</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">// combineReducers 辅助函数的作用是，把一个由多个不同 reducer 函数作为 value 的 object，合并成一个最终的 reducer 函数，然后就可以对这个 reducer 调用 createStore。</div><div class="line"></div><div class="line">const todoApp = combineReducers(&#123; todos &#125;)</div><div class="line"></div><div class="line"><span class="built_in">export</span> default todoApp</div></pre></td></tr></table></figure>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://cn.redux.js.org/index.html" target="_blank" rel="external">Redux中文文档</a></p>
+<p>The End</p>
+
+ 
+                <!-- Meta -->
+                <div class="post-meta">
+                    <hr>
+                    <br>
+                    <div class="post-tags">
+                        
+                            
+
+<a href="/tags/刚看到一脸懵逼的redux/">#刚看到一脸懵逼的redux</a>
+
+
+                        
+                    </div>
+                    <div class="post-date">
+                        2017 年 05 月 18 日
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- Disqus Comments -->
+
+
+            </div>
+        </div>
+    </div>
+</article>
+</section>
+
+    <!-- Scripts -->
+    <!-- jQuery -->
+<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+	console.log('Hexo-theme-hollow designed by zchen9 🙋 © 2015-' + (new Date()).getFullYear());
+</script>
+
+    <!-- Google Analytics -->
+    
+
+</body>
+
+</html>
