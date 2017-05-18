@@ -83,6 +83,8 @@
 <p>one里得到的<br>this.props.match.params.id = a2f5764c29994812addacd7df3f46fef</p>
 <p>（我查看了所有网页上的教材，都说要this.props.params.id，无需加match，但是当我那么做时，发现，props没有直接的params字段，而是隐藏在match字段下）</p>
 <p>:id匹配URL的一个部分，直到遇到下一个/、?、#为止。这个路径参数可以通过this.props.params.id取出。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;Route path=<span class="string">"/one/:toast?"</span> component=&#123;One&#125; /&gt;</div></pre></td></tr></table></figure>
+<p>在参数后面加问号，可以使页面为空的时候也显示，也就是说toast参数可能不存在，如果不加问号，该页面会报错。<br>适用于确定是否根据参数来渲染UI，比如我加了一个toast参数显示一个toast，不加则不显示。</p>
 <h2 id="指定当进入index-html时显示home组件（无path参数）"><a href="#指定当进入index-html时显示home组件（无path参数）" class="headerlink" title="指定当进入index.html时显示home组件（无path参数）"></a>指定当进入index.html时显示home组件（无path参数）</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;IndexRoute component=&#123;Home&#125; /&gt;</div></pre></td></tr></table></figure>
 <p>但是我个人更喜欢</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;Route path=<span class="string">"/"</span> component=&#123;Home&#125; /&gt;</div></pre></td></tr></table></figure>
