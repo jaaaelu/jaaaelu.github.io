@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="jaaaelu eslint yarn">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="jaaaelu">
+    
+
+    <!-- Title -->
+    
+    <title>Redux源码阅读笔记 | Jaaaelu - Girlthub</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+    <!-- Content -->
+    <section class="article-container">
+<!-- Back Home -->
+<a class="nav-back" href="/">
+    <i class="fa fa-puzzle-piece"></i>
+</a>
+
+<!-- Page Header -->
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>Redux源码阅读笔记</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Main Content -->
+            <div class="post-content col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <p>之前微博热门看了一个（漂亮）程序媛的一天<br>看到有人批评妹子说：<br>“一看这一天就没写多少代码。”<br>麻烦看下Redux源码，<br>好代码从不以量取胜。</p>
+<a id="more"></a>
+<hr>
+<p>看Redux源码还是挺轻松的：<br>代码不过几千行；<br>该抽的组件抽的十分清晰；<br>关键是，<br>函数命名和变量名都非常好懂，<br>好懂到你看名字能猜出它是干嘛使的……</p>
+<p>（但是这个框架还是有些繁重啊55555，尤其最近加上了Typescipt…..）</p>
+<p>废话不多说，Redux的源代码由以下JS文件组成：</p>
+<ul>
+<li>createStore</li>
+<li>combineReducers</li>
+<li>bindActionCreators</li>
+<li>applyMiddleware</li>
+<li>compose</li>
+<li>warning</li>
+</ul>
+<p>下面我们来一一讲解源代码：</p>
+<h2 id="combineReducers-reducer"><a href="#combineReducers-reducer" class="headerlink" title="combineReducers(reducer)"></a>combineReducers(reducer)</h2><p>把一个由多个不同 reducer 函数作为 value 的 object，合并成一个最终的 reducer 函数，然后就可以对这个 reducer 调用 createStore。</p>
+<pre><code>import { ActionTypes } from &apos;./createStore&apos;
+import isPlainObject from &apos;lodash/isPlainObject&apos;
+import warning from &apos;./utils/warning&apos;
+
+// reducer参数规定传入的state不能为undefined，原因就是下面的这个函数！
+
+function getUndefinedStateErrorMessage(key, action) {
+  const actionType = action &amp;&amp; action.type
+  const actionName = (actionType &amp;&amp; `&quot;${actionType.toString()}&quot;`) || &apos;an action&apos;
+
+  return (
+    `Given action ${actionName}, reducer &quot;${key}&quot; returned undefined. ` +
+    `To ignore an action, you must explicitly return the previous state. ` +
+    `If you want this reducer to hold no value, you can return null instead of undefined.`
+  )
+}
+
+function getUnexpectedStateShapeWarningMessage(inputState, reducers, action, unexpectedKeyCache) {
+  const reducerKeys = Object.keys(reducers)
+  const argumentName = action &amp;&amp; action.type === ActionTypes.INIT ?
+    &apos;preloadedState argument passed to createStore&apos; :
+    &apos;previous state received by the reducer&apos;
+
+// 检测reducer是否为空
+  if (reducerKeys.length === 0) {
+    return (
+      &apos;Store does not have a valid reducer. Make sure the argument passed &apos; +
+      &apos;to combineReducers is an object whose values are reducers.&apos;
+    )
+  }
+
+// 检测初始state是否为空
+  if (!isPlainObject(inputState)) {
+    return (
+      `The ${argumentName} has unexpected type of &quot;` +
+      ({}).toString.call(inputState).match(/\s([a-z|A-Z]+)/)[1] +
+      `&quot;. Expected argument to be an object with the following ` +
+      `keys: &quot;${reducerKeys.join(&apos;&quot;, &quot;&apos;)}&quot;`
+    )
+  }
+
+  const unexpectedKeys = Object.keys(inputState).filter(key =&gt;
+    !reducers.hasOwnProperty(key) &amp;&amp;
+    !unexpectedKeyCache[key]
+  )
+
+  unexpectedKeys.forEach(key =&gt; {
+    unexpectedKeyCache[key] = true
+  })
+
+  if (unexpectedKeys.length &gt; 0) {
+    return (
+      `Unexpected ${unexpectedKeys.length &gt; 1 ? &apos;keys&apos; : &apos;key&apos;} ` +
+      `&quot;${unexpectedKeys.join(&apos;&quot;, &quot;&apos;)}&quot; found in ${argumentName}. ` +
+      `Expected to find one of the known reducer keys instead: ` +
+      `&quot;${reducerKeys.join(&apos;&quot;, &quot;&apos;)}&quot;. Unexpected keys will be ignored.`
+    )
+  }
+}
+
+// 由下面的引用得知，此处传入的reducer为finalReducer || {}
+function assertReducerShape(reducers) {
+  Object.keys(reducers).forEach(key =&gt; {
+const reducer = reducers[key]
+// 初始state为undefined,初始type为ActionTypes.INIT
+    const initialState = reducer(undefined, { type: ActionTypes.INIT })
+
+    // 检测initialState返回值是否为undefined
+    if (typeof initialState === &apos;undefined&apos;) {
+      throw new Error(
+        `Reducer &quot;${key}&quot; returned undefined during initialization. ` +
+        `If the state passed to the reducer is undefined, you must ` +
+        `explicitly return the initial state. The initial state may ` +
+        `not be undefined. If you don&apos;t want to set a value for this reducer, ` +
+        `you can use null instead of undefined.`
+      )
+    }
+
+    // 检测type（随机）返回值是否为undefined
+    const type = &apos;@@redux/PROBE_UNKNOWN_ACTION_&apos; + Math.random().toString(36).substring(7).split(&apos;&apos;).join(&apos;.&apos;)
+    if (typeof reducer(undefined, { type }) === &apos;undefined&apos;) {
+      throw new Error(
+        `Reducer &quot;${key}&quot; returned undefined when probed with a random type. ` +
+        `Don&apos;t try to handle ${ActionTypes.INIT} or other actions in &quot;redux/*&quot; ` +
+        `namespace. They are considered private. Instead, you must return the ` +
+        `current state for any unknown actions, unless it is undefined, ` +
+        `in which case you must return the initial state, regardless of the ` +
+        `action type. The initial state may not be undefined, but can be null.`
+      )
+    }
+  })
+}
+
+
+
+ // 导出函数，reducers为包含多个reducer的obj，如{reducer1,reducer2}
+export default function combineReducers(reducers) {
+    // 遍历每个reducer
+  const reducerKeys = Object.keys(reducers)
+  const finalReducers = {}
+ // 过滤不合格类型的reducer
+  for (let i = 0; i &lt; reducerKeys.length; i++) {
+    const key = reducerKeys[i]
+
+    // 在开发环境下，reducer的值如果为undefined，则报错
+    if (process.env.NODE_ENV !== &apos;production&apos;) {
+      if (typeof reducers[key] === &apos;undefined&apos;) {
+        warning(`No reducer provided for key &quot;${key}&quot;`)
+      }
+    }
+
+    // 传入的reducer必须是个function
+    if (typeof reducers[key] === &apos;function&apos;) {
+      finalReducers[key] = reducers[key]
+    }
+  }
+ // 得到合格的reducer，成为finalReducers
+  const finalReducerKeys = Object.keys(finalReducers)
+
+  let unexpectedKeyCache
+  if (process.env.NODE_ENV !== &apos;production&apos;) {
+    unexpectedKeyCache = {}
+  }
+
+  let shapeAssertionError
+  try {
+    // 再检测reducer的初始state和type返回值是否合格
+    assertReducerShape(finalReducers)
+  } catch (e) {
+    shapeAssertionError = e
+  }
+
+  // 返回的函数值和reducer一样，接受state和aciton两个参数
+  return function combination(state = {}, action) {
+    if (shapeAssertionError) {
+      throw shapeAssertionError
+    }
+
+    if (process.env.NODE_ENV !== &apos;production&apos;) {
+      const warningMessage = getUnexpectedStateShapeWarningMessage(state, finalReducers, action, unexpectedKeyCache)
+      if (warningMessage) {
+        warning(warningMessage)
+      }
+    }
+
+    let hasChanged = false
+const nextState = {}
+
+    for (let i = 0; i &lt; finalReducerKeys.length; i++) {
+      const key = finalReducerKeys[i]
+const reducer = finalReducers[key]
+// 定义旧的state
+const previousStateForKey = state[key]
+// 接受旧的的state值，和action，得到新的state
+      const nextStateForKey = reducer(previousStateForKey, action)
+      if (typeof nextStateForKey === &apos;undefined&apos;) {
+        const errorMessage = getUndefinedStateErrorMessage(key, action)
+        throw new Error(errorMessage)
+      }
+nextState[key] = nextStateForKey
+// 对比判断是否改变state
+      hasChanged = hasChanged || nextStateForKey !== previousStateForKey
+}
+// 根据是否更改了state来返回不同的state值
+    return hasChanged ? nextState : state
+  }
+}
+</code></pre><h2 id="bindActionCreators-actionCreators-dispatch"><a href="#bindActionCreators-actionCreators-dispatch" class="headerlink" title="bindActionCreators(actionCreators, dispatch)"></a>bindActionCreators(actionCreators, dispatch)</h2><p>惟一使用 bindActionCreators 的场景是当你需要把 action creator 往下传到一个组件上，却不想让这个组件觉察到 Redux 的存在，而且不希望把 Redux store 或 dispatch 传给它。<br>（一般使用 react-redux 提供的 connect()来调用dipatch）</p>
+<pre><code>//返回的函数比原函数多包了一层dispatch
+function bindActionCreator(actionCreator, dispatch) {
+  return (...args) =&gt; dispatch(actionCreator(...args))
+}
+
+
+export default function bindActionCreators(actionCreators, dispatch) {
+  // 检测函数类型，则说明只有一个actionCreators
+  if (typeof actionCreators === &apos;function&apos;) {
+    return bindActionCreator(actionCreators, dispatch)
+  }
+
+  // actionCreators不能为空值或对象以外的值
+  if (typeof actionCreators !== &apos;object&apos; || actionCreators === null) {
+    throw new Error(
+      `bindActionCreators expected an object or a function, instead received ${actionCreators === null ? &apos;null&apos; : typeof actionCreators}. ` +
+      `Did you write &quot;import ActionCreators from&quot; instead of &quot;import * as ActionCreators from&quot;?`
+    )
+  }
+
+ //actionCreators如果是对象的话，说明有多个actionCreator，遍历并检测是否为函数，是则走bindActionCreator
+  const keys = Object.keys(actionCreators)
+  const boundActionCreators = {}
+  for (let i = 0; i &lt; keys.length; i++) {
+    const key = keys[i]
+    const actionCreator = actionCreators[key]
+    if (typeof actionCreator === &apos;function&apos;) {
+      boundActionCreators[key] = bindActionCreator(actionCreator, dispatch)
+    }
+  }
+  return boundActionCreators
+}
+</code></pre><p>【总结】当你不想在子组件中使用redux时使用。此函数等于把 action creators和dispatch通过props传给子组件！！！</p>
+<pre><code>let boundActionCreators = bindActionCreators(TodoActionCreators, dispatch);
+return (
+  &lt;TodoList todos={todos}
+     {...boundActionCreators} /&gt;
+);
+</code></pre><p>等同于</p>
+<pre><code>return &lt;TodoList todos={todos} dispatch={dispatch} /&gt;;
+</code></pre><h2 id="applyMiddleware-…middlewares"><a href="#applyMiddleware-…middlewares" class="headerlink" title="applyMiddleware(…middlewares)"></a>applyMiddleware(…middlewares)</h2><pre><code>import compose from &apos;./compose&apos;
+
+export default function applyMiddleware(...middlewares) {
+  return (createStore) =&gt; (reducer, preloadedState, enhancer) =&gt; {
+
+   【【【 * 关于createStore有这样一段代码：
+   //如果传入enhancer参数，就跳出执行enhancer，不再继续执行createStore下面的函数
+    if (typeof enhancer !== &apos;undefined&apos;) {
+    if (typeof enhancer !== &apos;function&apos;) {
+      throw new Error(&apos;Expected the enhancer to be a function.&apos;)
+    }
+
+    return enhancer(createStore)(reducer, preloadedState)
+  }】】】】
+
+
+
+    //enhancer(createStore)(reducer, preloadedState) 实际就是在applyMiddleware中执行createStore(reducer,preloadedState)
+    const store = createStore(reducer, preloadedState, enhancer)
+    let dispatch = store.dispatch
+    let chain = []
+
+    //同样定义初始值，getState和dispatch
+    const middlewareAPI = {
+      getState: store.getState,
+      dispatch: (...args) =&gt; dispatch(...args)
+    }
+    chain = middlewares.map(middleware =&gt; middleware(middlewareAPI))
+    //compose：API解释该函数作用是：从右到左来组合多个函数。具体实现看compose解析。
+    dispatch = compose(...chain)(store.dispatch)
+
+    return {
+      ...store,
+      dispatch
+    }
+  }
+}
+</code></pre><h2 id="createStore"><a href="#createStore" class="headerlink" title="createStore"></a>createStore</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div></pre></td><td class="code"><pre><div class="line">// 日常引组件，具体什么用，看它下面什么时候用到再看</div><div class="line">import isPlainObject from <span class="string">'lodash/isPlainObject'</span></div><div class="line">import $<span class="variable">$observable</span> from <span class="string">'symbol-observable'</span></div><div class="line"></div><div class="line">// 用于初始化和容错</div><div class="line"><span class="built_in">export</span> const ActionTypes = &#123;</div><div class="line">  INIT: <span class="string">'@@redux/INIT'</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">/** </div><div class="line">  *	 作者的一大串注释，注释太多，写成表达式大概就是这个意思</div><div class="line">  * <span class="keyword">if</span>(!action.Type)&#123; // 没传action.Type</div><div class="line">  *  <span class="built_in">return</span> currentState || initialState</div><div class="line">  *	 &#125; </div><div class="line">  */</div><div class="line"></div><div class="line"></div><div class="line"> /**</div><div class="line">   * 老版本createStore只有前两个参数，发现新加了一个参数</div><div class="line">   * @param &#123;reducer&#125; (currentState,action) =&gt; newState</div><div class="line">   * @param &#123;preloadedState&#125;  initialState</div><div class="line">   * @param &#123;enhancer&#125; ....看了一下API，某高阶函数</div><div class="line">   */</div><div class="line"><span class="built_in">export</span> default <span class="keyword">function</span> createStore(reducer, preloadedState, enhancer) &#123;</div><div class="line"></div><div class="line">  // 以下各种检测参数类型balabala...</div><div class="line">  <span class="keyword">if</span> (typeof preloadedState === <span class="string">'function'</span> &amp;&amp; typeof enhancer === <span class="string">'undefined'</span>) &#123;</div><div class="line">    enhancer = preloadedState</div><div class="line">    preloadedState = undefined</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (typeof enhancer !== <span class="string">'undefined'</span>) &#123;</div><div class="line">    <span class="keyword">if</span> (typeof enhancer !== <span class="string">'function'</span>) &#123;</div><div class="line">      throw new Error(<span class="string">'Expected the enhancer to be a function.'</span>)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="built_in">return</span> enhancer(createStore)(reducer, preloadedState)</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (typeof reducer !== <span class="string">'function'</span>) &#123;</div><div class="line">    throw new Error(<span class="string">'Expected the reducer to be a function.'</span>)</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  // 以下定义各种初始值balabala...</div><div class="line">  <span class="built_in">let</span> currentReducer = reducer</div><div class="line">  <span class="built_in">let</span> currentState = preloadedState</div><div class="line">  <span class="built_in">let</span> currentListeners = []</div><div class="line">  <span class="built_in">let</span> nextListeners = currentListeners</div><div class="line">  <span class="built_in">let</span> isDispatching = <span class="literal">false</span></div><div class="line"></div><div class="line">// 从函数名和参数以及函数逻辑可以看出，这是比较当前订阅源和下一个订阅源是否相同。</div><div class="line">  <span class="keyword">function</span> <span class="function"><span class="title">ensureCanMutateNextListeners</span></span>() &#123;</div><div class="line">    <span class="keyword">if</span> (nextListeners === currentListeners) &#123;</div><div class="line">      // 我擦，slice还可以不传（官方说是必须有首参数），试了一下，不传就是返回本身</div><div class="line">      nextListeners = currentListeners.slice()</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  // Store的官方API getState:就get当前State呗</div><div class="line">  <span class="keyword">function</span> <span class="function"><span class="title">getState</span></span>() &#123;</div><div class="line">    <span class="built_in">return</span> currentState</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  // Store的官方API subscribe：监听数据变化</div><div class="line">  <span class="keyword">function</span> subscribe(listener) &#123;</div><div class="line">  	 // 参数是个 dispatch action 后的回调函数</div><div class="line">    <span class="keyword">if</span> (typeof listener !== <span class="string">'function'</span>) &#123;</div><div class="line">      throw new Error(<span class="string">'Expected listener to be a function.'</span>)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="built_in">let</span> isSubscribed = <span class="literal">true</span></div><div class="line"></div><div class="line">    ensureCanMutateNextListeners()</div><div class="line">    nextListeners.push(listener)</div><div class="line">	</div><div class="line">	// 监听完了返回一个函数，执行这个函数，可以取消监听</div><div class="line">    <span class="built_in">return</span> <span class="keyword">function</span> <span class="function"><span class="title">unsubscribe</span></span>() &#123;</div><div class="line">      <span class="keyword">if</span> (!isSubscribed) &#123;</div><div class="line">        <span class="built_in">return</span></div><div class="line">      &#125;</div><div class="line"></div><div class="line">      isSubscribed = <span class="literal">false</span></div><div class="line"></div><div class="line">      ensureCanMutateNextListeners()</div><div class="line">      const index = nextListeners.indexOf(listener)</div><div class="line">      nextListeners.splice(index, 1)</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  </div><div class="line">   // Store的官方API的【王者】dispatch:触发state变化的【唯一】方法，参数action必须为对象</div><div class="line">  <span class="keyword">function</span> dispatch(action) &#123;</div><div class="line">  	 // action不能为空</div><div class="line">    <span class="keyword">if</span> (!isPlainObject(action)) &#123;</div><div class="line">      throw new Error(</div><div class="line">        <span class="string">'Actions must be plain objects. '</span> +</div><div class="line">        <span class="string">'Use custom middleware for async actions.'</span></div><div class="line">      )</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">	 // action.type不能为空</div><div class="line">    <span class="keyword">if</span> (typeof action.type === <span class="string">'undefined'</span>) &#123;</div><div class="line">      throw new Error(</div><div class="line">        <span class="string">'Actions may not have an undefined "type" property. '</span> +</div><div class="line">        <span class="string">'Have you misspelled a constant?'</span></div><div class="line">      )</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">    <span class="keyword">if</span> (isDispatching) &#123;</div><div class="line">      throw new Error(<span class="string">'Reducers may not dispatch actions.'</span>)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    try &#123;</div><div class="line">      isDispatching = <span class="literal">true</span></div><div class="line">      </div><div class="line">      // !!!!!【划重点】将 currentState 设置为 reducer(currentState, action) 返回的值</div><div class="line">      currentState = currentReducer(currentState, action)</div><div class="line">    &#125; finally &#123;</div><div class="line">      isDispatching = <span class="literal">false</span></div><div class="line">    &#125;</div><div class="line">	</div><div class="line">	// 如果有监听就循环调用监听</div><div class="line">    const listeners = currentListeners = nextListeners</div><div class="line">    <span class="keyword">for</span> (<span class="built_in">let</span> i = 0; i &lt; listeners.length; i++) &#123;</div><div class="line">      const listener = listeners[i]</div><div class="line">      listener()</div><div class="line">    &#125;</div><div class="line">	</div><div class="line">	// 返回action</div><div class="line">    <span class="built_in">return</span> action</div><div class="line">  &#125;</div><div class="line"></div><div class="line">	//Store官方新增的高级API：替换store当前用来计算state的 reducer...官方都说不怎么用....</div><div class="line">   <span class="keyword">function</span> replaceReducer(nextReducer) &#123;</div><div class="line">    <span class="keyword">if</span> (typeof nextReducer !== <span class="string">'function'</span>) &#123;</div><div class="line">      throw new Error(<span class="string">'Expected the nextReducer to be a function.'</span>)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    currentReducer = nextReducer</div><div class="line">    dispatch(&#123; <span class="built_in">type</span>: ActionTypes.INIT &#125;)</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">	//Store官方新增API：新到官网都找不到它=。=原理是ES6的修饰符。修饰符的作用就是拿到自己想要拿的属性。这个应该也是差不多意思吧？mobx用的就是observable，可以比对下！！！</div><div class="line">   <span class="keyword">function</span> <span class="function"><span class="title">observable</span></span>() &#123;</div><div class="line">    const outerSubscribe = subscribe</div><div class="line">    <span class="built_in">return</span> &#123;</div><div class="line">       subscribe(observer) &#123;</div><div class="line">        <span class="keyword">if</span> (typeof observer !== <span class="string">'object'</span>) &#123;</div><div class="line">          throw new TypeError(<span class="string">'Expected the observer to be an object.'</span>)</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">function</span> <span class="function"><span class="title">observeState</span></span>() &#123;</div><div class="line">          <span class="keyword">if</span> (observer.next) &#123;</div><div class="line">            observer.next(getState())</div><div class="line">          &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        observeState()</div><div class="line">        const unsubscribe = outerSubscribe(observeState)</div><div class="line">        <span class="built_in">return</span> &#123; unsubscribe &#125;</div><div class="line">      &#125;,</div><div class="line"></div><div class="line">      [$<span class="variable">$observable</span>]() &#123;</div><div class="line">        <span class="built_in">return</span> this</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">	</div><div class="line">  // 初始化的时候就自己调用了最早定义的常量ActionTypes.INIT</div><div class="line">  dispatch(&#123; <span class="built_in">type</span>: ActionTypes.INIT &#125;)</div><div class="line">  </div><div class="line">  // 导出API</div><div class="line">  <span class="built_in">return</span> &#123;</div><div class="line">    dispatch,</div><div class="line">    subscribe,</div><div class="line">    getState,</div><div class="line">    replaceReducer,</div><div class="line">    [$<span class="variable">$observable</span>]: observable</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<h2 id="compose"><a href="#compose" class="headerlink" title="compose"></a>compose</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">export default function compose(...funcs) &#123;</div><div class="line">  if (funcs.length === 0) &#123;</div><div class="line">    return arg =&gt; arg</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  if (funcs.length === 1) &#123;</div><div class="line">    return funcs[0]</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  return funcs.reduce((a, b) =&gt; (...args) =&gt; a(b(...args)))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>关于reduce方法</li>
+</ul>
+<p>我在浏览器使用该方法写了一个测试函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">[1,2,3,4,5].reduce(function(a,b,c,d)&#123;</div><div class="line">    console.log(&apos;这是a：&apos;+a);</div><div class="line">    console.log(&apos;这是b：&apos;+b);</div><div class="line">    console.log(&apos;这是c：&apos;+c);</div><div class="line">    console.log(&apos;这是d：&apos;+d);</div><div class="line">    return a+b</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>得到如下结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">这是a：1</div><div class="line">这是b：2</div><div class="line">这是c：1</div><div class="line">这是d：1,2,3,4,5</div><div class="line">这是a：3</div><div class="line">这是b：3</div><div class="line">这是c：2</div><div class="line">这是d：1,2,3,4,5</div><div class="line">这是a：6</div><div class="line">这是b：4</div><div class="line">这是c：3</div><div class="line">这是d：1,2,3,4,5</div><div class="line">这是a：10</div><div class="line">这是b：5</div><div class="line">这是c：4</div><div class="line">这是d：1,2,3,4,5</div><div class="line">15</div></pre></td></tr></table></figure>
+<p>理解每一个参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">a:第一次执行reduce时值为数组第一项，第二次之后为前一次函数的返回值，从右到左结合返回值a4(a3(a2(a1))</div><div class="line">b:为当前执行的值</div><div class="line">c:为当前执行的值的索引</div><div class="line">d:执行函数的数组</div></pre></td></tr></table></figure>
+<p>在applyMiddleware中有使用到该函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">const middlewareAPI = &#123;</div><div class="line">        getState: store.getState,</div><div class="line">        dispatch: (...args) =&gt; dispatch(...args)</div><div class="line">    &#125;</div><div class="line">chain = middlewares.map(middleware =&gt; middleware(middlewareAPI))</div><div class="line">dispatch = compose(...chain)(store.dispatch)</div></pre></td></tr></table></figure>
+<ul>
+<li><p>compose实际作用</p>
+<p>  回头看reduce函数与中间件的定义，可以得出：<br>中间件的dispatch实际遍历所有中间件，通过reduce执行从右到左的结合，使它们都获得初始state和dispatch，避免遗漏。最后将中间件的dispatch结合到store的dispatch里面。</p>
+</li>
+</ul>
+<h2 id="utils里的warning"><a href="#utils里的warning" class="headerlink" title="utils里的warning"></a>utils里的warning</h2><ul>
+<li>抛出异常</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">export default function warning(message) &#123;</div><div class="line">  if (typeof console !== &apos;undefined&apos; &amp;&amp; typeof console.error === &apos;function&apos;) &#123;</div><div class="line">    console.error(message)</div><div class="line">  &#125;</div><div class="line">  try &#123;</div><div class="line">    throw new Error(message)</div><div class="line">  &#125; catch (e) &#123; &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>在combineReducers里的使用</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">if (process.env.NODE_ENV !== &apos;production&apos;) &#123;</div><div class="line">  if (typeof reducers[key] === &apos;undefined&apos;) &#123;</div><div class="line">    warning(`No reducer provided for key &quot;$&#123;key&#125;&quot;`)</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li><p>思考</p>
+<p>  实际运用中一般我们都使用throw new Error，但是没有使用过组件来包一层，直接使用组件来的简洁明了。在日后的工程项目中，可以借鉴这个组件加以使用。</p>
+</li>
+</ul>
+<p>The End</p>
+
+ 
+                <!-- Meta -->
+                <div class="post-meta">
+                    <hr>
+                    <br>
+                    <div class="post-tags">
+                        
+                            
+
+<a href="/tags/好歹我也是读过源码的人了/">#好歹我也是读过源码的人了</a>
+
+
+                        
+                    </div>
+                    <div class="post-date">
+                        2018 年 02 月 24 日
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- Disqus Comments -->
+
+
+            </div>
+        </div>
+    </div>
+</article>
+</section>
+
+    <!-- Scripts -->
+    <!-- jQuery -->
+<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+	console.log('Hexo-theme-hollow designed by zchen9 🙋 © 2015-' + (new Date()).getFullYear());
+</script>
+
+    <!-- Google Analytics -->
+    
+
+</body>
+
+</html>
