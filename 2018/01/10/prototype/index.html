@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="jaaaelu eslint yarn">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="jaaaelu">
+    
+
+    <!-- Title -->
+    
+    <title>JS语法：继承这个磨人的小妖精 | Jaaaelu - Girlthub</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+    <!-- Content -->
+    <section class="article-container">
+<!-- Back Home -->
+<a class="nav-back" href="/">
+    <i class="fa fa-puzzle-piece"></i>
+</a>
+
+<!-- Page Header -->
+<header class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>JS语法：继承这个磨人的小妖精</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <!-- Post Main Content -->
+            <div class="post-content col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <p>恕在下愚钝，这些年除了JS高级程序设计，<br>鲜少看到一篇全面的关于继承的好文章，<br>撒花并摘抄以记录之 (๑•̀ㅂ•́)و✧</p>
+<a id="more"></a>
+<hr>
+<h2 id="三个基础元素的关系"><a href="#三个基础元素的关系" class="headerlink" title="三个基础元素的关系"></a>三个基础元素的关系</h2><h5 id="每个构造函数-constructor-都有一个原型对象-prototype-，原型对象都包含一个指向构造函数的指针，而实例-instance-都包含一个指向原型对象的内部指针。"><a href="#每个构造函数-constructor-都有一个原型对象-prototype-，原型对象都包含一个指向构造函数的指针，而实例-instance-都包含一个指向原型对象的内部指针。" class="headerlink" title="每个构造函数(constructor)都有一个原型对象(prototype)，原型对象都包含一个指向构造函数的指针，而实例(instance)都包含一个指向原型对象的内部指针。"></a>每个构造函数(constructor)都有一个原型对象(prototype)，原型对象都包含一个指向构造函数的指针，而实例(instance)都包含一个指向原型对象的内部指针。</h5><h2 id="神秘的原型链"><a href="#神秘的原型链" class="headerlink" title="神秘的原型链"></a>神秘的原型链</h2><h5 id="查找对象的某个属性，会在当前对象的内部找，找不到再在它的原型对象中找，直至Object对象。"><a href="#查找对象的某个属性，会在当前对象的内部找，找不到再在它的原型对象中找，直至Object对象。" class="headerlink" title="查找对象的某个属性，会在当前对象的内部找，找不到再在它的原型对象中找，直至Object对象。"></a>查找对象的某个属性，会在当前对象的内部找，找不到再在它的原型对象中找，直至Object对象。</h5><p>如果试图引用constructor1构造的实例instance1的某个属性p1:</p>
+<ul>
+<li>首先会在instance1内部属性中找一遍;</li>
+<li>接着会在instance1.<strong>proto</strong>(constructor1.prototype)中找一遍,而constructor1.prototype实际上是instance2, 也就是说在instance2中寻找该属性p1;</li>
+<li>如果instance2中还是没有,此时程序不会灰心,它会继续在instance2.<strong>proto</strong>(constructor2.prototype)中寻找…直至Object的原型对象</li>
+</ul>
+<h5 id="这条搜索轨迹就是连接实例与原型关系的原型链！"><a href="#这条搜索轨迹就是连接实例与原型关系的原型链！" class="headerlink" title="这条搜索轨迹就是连接实例与原型关系的原型链！"></a>这条搜索轨迹就是连接实例与原型关系的原型链！</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">instance1--&gt; instance2 --&gt; constructor2.prototype…--&gt;Object.prototype</div></pre></td></tr></table></figure>
+<h2 id="原型和实例的关系"><a href="#原型和实例的关系" class="headerlink" title="原型和实例的关系"></a>原型和实例的关系</h2><p>判断方法有两种：</p>
+<h5 id="instanceof关键字-实例-instance-与原型链中出现过的构造函数比较"><a href="#instanceof关键字-实例-instance-与原型链中出现过的构造函数比较" class="headerlink" title="* instanceof关键字:实例(instance)与原型链中出现过的构造函数比较"></a>* instanceof关键字:实例(instance)与原型链中出现过的构造函数比较</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">alert(instance instanceof Object);//true</div><div class="line">alert(instance instanceof Father);//true</div><div class="line">alert(instance instanceof Son);//true</div></pre></td></tr></table></figure>
+<h5 id="isPrototypeOf方法：原理同上"><a href="#isPrototypeOf方法：原理同上" class="headerlink" title="* isPrototypeOf方法：原理同上"></a>* isPrototypeOf方法：原理同上</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">alert(Object.prototype.isPrototypeOf(instance));//true</div><div class="line">alert(Father.prototype.isPrototypeOf(instance));//true</div><div class="line">alert(Son.prototype.isPrototypeOf(instance));//true</div></pre></td></tr></table></figure>
+<h2 id="原型链继承"><a href="#原型链继承" class="headerlink" title="原型链继承"></a>原型链继承</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">function Father()&#123;</div><div class="line">    this.property = true;</div><div class="line">&#125;</div><div class="line">Father.prototype.getFatherValue = function()&#123;</div><div class="line">    return this.property;</div><div class="line">&#125;</div><div class="line">function Son()&#123;</div><div class="line">    this.sonProperty = false;</div><div class="line">&#125;</div><div class="line">//继承 Father</div><div class="line">Son.prototype = new Father();//Son.prototype被重写,导致Son.prototype.constructor也一同被重写</div><div class="line">Son.prototype.getSonValue = function()&#123;</div><div class="line">    return this.sonProperty;</div><div class="line">&#125;</div><div class="line">var instance = new Son();</div><div class="line">alert(instance.getFatherValue());//true</div></pre></td></tr></table></figure>
+<p>instance实例通过原型链找到了Father原型中的getFatherValue方法</p>
+<p>注意: 此时instance.constructor指向的是Father,这是因为Son.prototype中的constructor被重写的缘故</p>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ul>
+<li>当原型链中包含引用类型值的原型时,该引用类型值会被所有实例共享;</li>
+<li>在创建子类型(例如创建Son的实例)时,不能向超类型(例如Father)的构造函数中传递参数.</li>
+</ul>
+<h2 id="借用构造函数继承"><a href="#借用构造函数继承" class="headerlink" title="借用构造函数继承"></a>借用构造函数继承</h2><p>解决了原型链的两个问题：</p>
+<ul>
+<li>保证了原型链中引用类型值的独立,不再被所有实例共享;</li>
+<li>子类型创建时也能够向父类型传递参数.</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">function Father()&#123;</div><div class="line">    this.colors = [&quot;red&quot;,&quot;blue&quot;,&quot;green&quot;];</div><div class="line">&#125;</div><div class="line">function Son()&#123;</div><div class="line">    Father.call(this);//继承了Father,且向父类型传递参数，call函数的第二个参数为Father的第一个参数</div><div class="line">&#125;</div><div class="line">var instance1 = new Son();</div><div class="line">instance1.colors.push(&quot;black&quot;);</div><div class="line">console.log(instance1.colors);//&quot;red,blue,green,black&quot;</div><div class="line"></div><div class="line">var instance2 = new Son();</div><div class="line">console.log(instance2.colors);//&quot;red,blue,green&quot; 可见引用类型值是独立的</div></pre></td></tr></table></figure>
+<h3 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h3><ul>
+<li>方法都在构造函数中定义, 因此函数复用也就不可用了</li>
+<li>超类型(如Father)中定义的方法,对子类型而言也是不可见的</li>
+</ul>
+<h2 id="组合继承"><a href="#组合继承" class="headerlink" title="组合继承"></a>组合继承</h2><h5 id="使用原型链实现对原型属性和方法的继承-通过借用构造函数来实现对实例属性的继承"><a href="#使用原型链实现对原型属性和方法的继承-通过借用构造函数来实现对实例属性的继承" class="headerlink" title="使用原型链实现对原型属性和方法的继承,通过借用构造函数来实现对实例属性的继承."></a>使用原型链实现对原型属性和方法的继承,通过借用构造函数来实现对实例属性的继承.</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">function Father(name)&#123;</div><div class="line">    this.name = name;</div><div class="line">    this.colors = [&quot;red&quot;,&quot;blue&quot;,&quot;green&quot;];</div><div class="line">&#125;</div><div class="line">Father.prototype.sayName = function()&#123;</div><div class="line">    alert(this.name);</div><div class="line">&#125;;</div><div class="line">function Son(name,age)&#123;</div><div class="line">    Father.call(this,name);//继承实例属性，第一次调用Father()</div><div class="line">    this.age = age;</div><div class="line">&#125;</div><div class="line">Son.prototype = new Father();//继承父类方法,第二次调用Father()</div><div class="line">Son.prototype.sayAge = function()&#123;</div><div class="line">    alert(this.age);</div><div class="line">&#125;</div><div class="line">var instance1 = new Son(&quot;louis&quot;,5);</div><div class="line">instance1.colors.push(&quot;black&quot;);</div><div class="line">console.log(instance1.colors);//&quot;red,blue,green,black&quot;</div><div class="line">instance1.sayName();//louis</div><div class="line">instance1.sayAge();//5</div><div class="line"></div><div class="line">var instance1 = new Son(&quot;zhai&quot;,10);</div><div class="line">console.log(instance1.colors);//&quot;red,blue,green&quot;</div><div class="line">instance1.sayName();//zhai</div><div class="line">instance1.sayAge();//10</div></pre></td></tr></table></figure>
+<h3 id="问题-2"><a href="#问题-2" class="headerlink" title="问题"></a>问题</h3><ul>
+<li>组合继承其实调用了两次父类构造函数（new Father()以及Father.call(this)）, 造成了不必要的消耗</li>
+</ul>
+<h2 id="原型继承"><a href="#原型继承" class="headerlink" title="原型继承"></a>原型继承</h2><h5 id="借助原型可以基于已有的对象创建新对象，同时还不必因此创建自定义类型。"><a href="#借助原型可以基于已有的对象创建新对象，同时还不必因此创建自定义类型。" class="headerlink" title="借助原型可以基于已有的对象创建新对象，同时还不必因此创建自定义类型。"></a>借助原型可以基于已有的对象创建新对象，同时还不必因此创建自定义类型。</h5><p>在object()函数内部，先创建一个临时性的构造函数，然后将传入的对象作为这个构造函数的原型，最后返回了这个临时类型的一个新实例。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function object(o)&#123;</div><div class="line">    function F()&#123;&#125;</div><div class="line">    F.prototype = o;</div><div class="line">    return new F();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从本质上讲, object() 对传入其中的对象执行了一次浅复制</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">var person = &#123;</div><div class="line">    friends : [&quot;Van&quot;,&quot;Louis&quot;,&quot;Nick&quot;]</div><div class="line">&#125;;</div><div class="line">var anotherPerson = object(person);</div><div class="line">anotherPerson.friends.push(&quot;Rob&quot;);</div><div class="line">var yetAnotherPerson = object(person);</div><div class="line">yetAnotherPerson.friends.push(&quot;Style&quot;);</div><div class="line">alert(person.friends);//&quot;Van,Louis,Nick,Rob,Style&quot;</div></pre></td></tr></table></figure>
+<p>person.friends不仅属于person所有,而且也会被anotherPerson以及yetAnotherPerson共享.</p>
+<h5 id="在ES5中-通过新增-object-create-方法规范化了上面的原型式继承"><a href="#在ES5中-通过新增-object-create-方法规范化了上面的原型式继承" class="headerlink" title="在ES5中,通过新增 object.create() 方法规范化了上面的原型式继承."></a>在ES5中,通过新增 object.create() 方法规范化了上面的原型式继承.</h5><p>object.create() 接收两个参数:</p>
+<ul>
+<li>一个用作新对象原型的对象</li>
+<li>(可选的)一个为新对象定义额外属性的对象</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">var person = &#123;</div><div class="line">    friends : [&quot;Van&quot;,&quot;Louis&quot;,&quot;Nick&quot;]</div><div class="line">&#125;;</div><div class="line">var anotherPerson = Object.create(person);</div><div class="line">anotherPerson.friends.push(&quot;Rob&quot;);</div><div class="line">var yetAnotherPerson = Object.create(person);</div><div class="line">yetAnotherPerson.friends.push(&quot;Style&quot;);</div><div class="line">alert(person.friends);//&quot;Van,Louis,Nick,Rob,Style&quot;</div></pre></td></tr></table></figure>
+<p>它的第二个参数与Object.defineProperties()方法的第二个参数格式相同: 每个属性都是通过自己的描述符定义的.</p>
+<h5 id="以这种方式指定的任何属性都会覆盖原型对象上的同名属性"><a href="#以这种方式指定的任何属性都会覆盖原型对象上的同名属性" class="headerlink" title="以这种方式指定的任何属性都会覆盖原型对象上的同名属性"></a>以这种方式指定的任何属性都会覆盖原型对象上的同名属性</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">var person = &#123;</div><div class="line">    name : &quot;Van&quot;</div><div class="line">&#125;;</div><div class="line">var anotherPerson = Object.create(person, &#123;</div><div class="line">    name : &#123;</div><div class="line">        value : &quot;Louis&quot;</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line">alert(anotherPerson.name);//&quot;Louis&quot;</div></pre></td></tr></table></figure>
+<h3 id="问题-3"><a href="#问题-3" class="headerlink" title="问题"></a>问题</h3><ul>
+<li>原型式继承中, 包含引用类型值的属性始终都会共享相应的值, 就像使用原型模式一样.</li>
+</ul>
+<h2 id="寄生式继承"><a href="#寄生式继承" class="headerlink" title="寄生式继承"></a>寄生式继承</h2><h5 id="创建一个仅用于封装继承过程的函数-该函数在内部以某种方式来增强对象-最后再像真的是它做了所有工作一样返回对象"><a href="#创建一个仅用于封装继承过程的函数-该函数在内部以某种方式来增强对象-最后再像真的是它做了所有工作一样返回对象" class="headerlink" title="创建一个仅用于封装继承过程的函数,该函数在内部以某种方式来增强对象,最后再像真的是它做了所有工作一样返回对象"></a>创建一个仅用于封装继承过程的函数,该函数在内部以某种方式来增强对象,最后再像真的是它做了所有工作一样返回对象</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">function createAnother(person)&#123;</div><div class="line">    var anotherPerson = object(person);//通过调用object函数创建一个新对象</div><div class="line">    anotherPerson.sayHi = function()&#123;//以某种方式来增强这个对象</div><div class="line">        alert(&quot;hi&quot;);</div><div class="line">    &#125;;</div><div class="line">    return anotherPerson;//返回这个对象</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个例子中的代码基于person返回了一个新对象–anotherPerson。新对象不仅具有 person 的所有属性和方法, 而且还被增强了, 拥有了sayHi()方法.</p>
+<h3 id="问题-4"><a href="#问题-4" class="headerlink" title="问题"></a>问题</h3><ul>
+<li>使用寄生式继承来为对象添加函数, 会由于不能做到函数复用而降低效率;这一点与构造函数模式类似.</li>
+</ul>
+<h2 id="最优解：寄生组合式继承"><a href="#最优解：寄生组合式继承" class="headerlink" title="最优解：寄生组合式继承"></a>最优解：寄生组合式继承</h2><h5 id="寄生组合式继承就是为了降低调用父类构造函数的开销而出现的。解决组合继承的性能问题"><a href="#寄生组合式继承就是为了降低调用父类构造函数的开销而出现的。解决组合继承的性能问题" class="headerlink" title="寄生组合式继承就是为了降低调用父类构造函数的开销而出现的。解决组合继承的性能问题"></a>寄生组合式继承就是为了降低调用父类构造函数的开销而出现的。解决组合继承的性能问题</h5><p>不必为了指定子类型的原型而调用超类型的构造函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">function extend(subClass,superClass)&#123;</div><div class="line">    var prototype = object(superClass.prototype);//创建对象</div><div class="line">    prototype.constructor = subClass;//增强对象</div><div class="line">    subClass.prototype = prototype;//指定对象</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>extend的高效率体现在它没有调用superClass构造函数,因此避免了在subClass.prototype上面创建不必要,多余的属性. </p>
+<p>于此同时,原型链还能保持不变; 因此还能正常使用 instanceof 和 isPrototypeOf() 方法.</p>
+<p>以上,寄生组合式继承,集寄生式继承和组合继承的优点于一身,是实现基于类型继承的最有效方法.</p>
+<h2 id="new-运算符干了什么"><a href="#new-运算符干了什么" class="headerlink" title="new 运算符干了什么"></a>new 运算符干了什么</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">var obj  = &#123;&#125;;</div><div class="line">obj.__proto__ = F.prototype;</div><div class="line">F.call(obj);</div></pre></td></tr></table></figure>
+<p>我们可以这么理解: 以 new 操作符调用构造函数的时候，函数内部实际上发生以下变化：</p>
+<ul>
+<li>1、创建一个空对象，并且 this 变量引用该对象，同时还继承了该函数的原型。</li>
+<li>2、属性和方法被加入到 this 引用的对象中。</li>
+<li>3、新创建的对象由 this 所引用，并且最后隐式的返回 this.</li>
+</ul>
+<h3 id="proto-属性是指定原型的关键"><a href="#proto-属性是指定原型的关键" class="headerlink" title=" proto  属性是指定原型的关键"></a><strong> proto </strong> 属性是指定原型的关键</h3><p>以上, 通过设置 <strong> proto </strong> 属性继承了父类, 如果去掉new 操作, 直接参考如下写法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">subClass.prototype = superClass.prototype;//直接指向超类型prototype</div></pre></td></tr></table></figure>
+<p>那么, 使用 instanceof 方法判断对象是否是构造器的实例时, 将会出现紊乱.</p>
+<h2 id="原型链继承最终回"><a href="#原型链继承最终回" class="headerlink" title="原型链继承最终回"></a>原型链继承最终回</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">function extend(subClass, superClass) &#123;</div><div class="line">  subClass.prototype = superClass.prototype;</div><div class="line"></div><div class="line">  subClass.superclass = superClass.prototype;</div><div class="line">  if(superClass.prototype.constructor == Object.prototype.constructor) &#123;</div><div class="line">    superClass.prototype.constructor = superClass;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">function Father(name)&#123;</div><div class="line">    this.name = name;</div><div class="line">    this.colors = [&quot;red&quot;,&quot;blue&quot;,&quot;green&quot;];</div><div class="line">&#125;</div><div class="line">Father.prototype.sayName = function()&#123;</div><div class="line">    alert(this.name);</div><div class="line">&#125;;</div><div class="line">function Son(name,age)&#123;</div><div class="line">    Father.call(this,name);//继承实例属性，第一次调用Father()</div><div class="line">    this.age = age;</div><div class="line">&#125;</div><div class="line">extend(Son,Father)//继承父类方法,此处并不会第二次调用Father()</div><div class="line">Son.prototype.sayAge = function()&#123;</div><div class="line">    alert(this.age);</div><div class="line">&#125;</div><div class="line">var instance1 = new Son(&quot;louis&quot;,5);</div><div class="line">instance1.colors.push(&quot;black&quot;);</div><div class="line">console.log(instance1.colors);//&quot;red,blue,green,black&quot;</div><div class="line">instance1.sayName();//louis</div><div class="line">instance1.sayAge();//5</div><div class="line"></div><div class="line">var instance1 = new Son(&quot;zhai&quot;,10);</div><div class="line">console.log(instance1.colors);//&quot;red,blue,green&quot;</div><div class="line">instance1.sayName();//zhai</div><div class="line">instance1.sayAge();//10</div></pre></td></tr></table></figure>
+<h2 id="备忘"><a href="#备忘" class="headerlink" title="备忘"></a>备忘</h2><p>部署请用hexo g + hexo d</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://juejin.im/post/58f94c9bb123db411953691b" target="_blank" rel="external">源自此文</a></p>
+<p>The End</p>
+
+ 
+                <!-- Meta -->
+                <div class="post-meta">
+                    <hr>
+                    <br>
+                    <div class="post-tags">
+                        
+                            
+
+<a href="/tags/基础很重要啊喂/">#基础很重要啊喂</a>
+
+
+                        
+                    </div>
+                    <div class="post-date">
+                        2018 年 01 月 10 日
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- Disqus Comments -->
+
+
+            </div>
+        </div>
+    </div>
+</article>
+</section>
+
+    <!-- Scripts -->
+    <!-- jQuery -->
+<script src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+	console.log('Hexo-theme-hollow designed by zchen9 🙋 © 2015-' + (new Date()).getFullYear());
+</script>
+
+    <!-- Google Analytics -->
+    
+
+</body>
+
+</html>
